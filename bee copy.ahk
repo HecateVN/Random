@@ -260,10 +260,10 @@ uiUniversal(order := 0, exitUi := 1, continuous := 0) {
             repeatKey("Enter", 1)
         }       
         else if (A_LoopField = "5") {
-            Sleep, 500
+            Sleep, 200
         } 
         else if (A_LoopField = "6" && !FastMode) {
-            Sleep, 250
+            Sleep, 100
         }     
     }
 
@@ -501,10 +501,6 @@ if (FirstRun)
 else
     Gosub, ShowGui
 return
-
-BuyHoneyShop:
-    Gosub, HoneyShopPath
-Return
 
 ShowWelcome:
     Gui, 99: Destroy
@@ -1416,9 +1412,6 @@ Return
 BuyEggShop:
     currentSection := "BuyEggShop"
 
-BuyHoenyShop:
-    currentSection := "BuyHoneyShop"
-
 if (selectedEggItems.Length()) {
        if (UseAlts) {
     for index, winID in windowIDs {
@@ -1433,6 +1426,9 @@ if (selectedEggItems.Length()) {
 } 
 
 Return
+
+BuyHoneyShop:
+    currentSection := "BuyHoneyShop"
 
 if (selectedHoneyItems.Length()) {
        if (UseAlts) {
@@ -1552,7 +1548,7 @@ zoomAlignment:
 
     Sleep, 200
 
-    Loop, 6 {
+    Loop, 9 {
         Send, {wheelDown}
         Sleep, 20
     }
@@ -1590,7 +1586,7 @@ EggShopPath:
     Sleep, 100
     uiUniversal("61616161606")
     Sleep, 100
-    Send {2}
+    Send {0}
     Sleep, % fastmode ? 100 : 1000
     SafeClickRelative(0.5, 0.5)
     SendDiscordMessage(webhookURL, "**[EGG CYCLE]**")
@@ -1711,7 +1707,7 @@ GearShopPath:
     Sleep, 100
     uiUniversal("61616161606")
     Sleep, % FastMode ? 100 : 500
-    Send {2}
+    Send {0}
     Sleep, % FastMode ? 100 : 500
     SafeClickRelative(0.5, 0.5)
     Sleep, % FastMode ? 1200 : 2500
@@ -1789,17 +1785,13 @@ HoneyShopPath:
     Send, {d up}
     Sleep, % FastMode ? 300 : 300
     Send, {w Down}
-    Sleep, 530
+    Sleep, 540
     Send, {w Up}
     Sleep, % FastMode ? 100 : 300
     Send, {d down}
     Sleep, 925
     Send, {d up}
     Sleep, % FastMode ? 100 : 300
-    Send, {s down}
-    Sleep, 70
-    Send, {s up}
-    Sleep, % FastMode ? 100 : 1200
     Send, {e}
     Sleep, 2500
     SafeClickRelative(0.64, 0.50)
@@ -1810,9 +1802,119 @@ HoneyShopPath:
 
     ; detect shop open (up to 5 tries)
     
-    uiUniversal("636363616164646363636361616164646060566064646060646064606064606460606460646060646064646060646064646060626066666606", 0)
+    uiUniversal("63636361616464636363636161616464606056464", 0)
     Sleep, 100
+selectedHoneyItems := []
+Loop, 12 {
+    IniRead, value, %A_ScriptDir%\settings.ini, Honey, Item%A_Index%, 0
+    if (value = 1)
+        selectedHoneyItems.Push(A_Index)
+}
+
+For index, item in selectedHoneyItems {
+
+    if (item = 1) {
+        uiUniversal("636363636363636363636364646064646", 0, 1)
+	currentItem := "Flower Seed Pack"
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+	Sleep, 100
+
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
+
+    else if (item = 2) {
+        uiUniversal("6363636363636363636363646464646460646", 0, 1)
+	currentItem := "Nectarine Seed"
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+	Sleep, 100
+
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
+
+    else if (item = 3) {
+        uiUniversal("636363636363636363636364646464646460646", 0, 1)
+	currentItem := "Hive Fruit Seed"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
     
+    else if (item = 4) {
+        uiUniversal("63636363636363636363636464646464646460646", 0, 1)
+	currentItem := "Honey Sprinkler"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
+
+    else if (item = 5) {
+        uiUniversal("6363636363636363636363636363636364646464646464646064646", 0, 1)
+	currentItem := "Bee Egg"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 150
+    }
+
+    else if (item = 6) {
+        uiUniversal("6363636363636363636363636363636364646464646464646464606464", 0, 1)
+	currentItem := "Bee Crate"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
+
+    else if (item = 7) {
+        uiUniversal("636363636363636363636363636363636464646464646464646464646064", 0, 1)
+	currentItem := "Honey Comb"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
+
+    else if (item = 8) {
+        uiUniversal("63636363636363636363636363636363646464646464646464646464606464", 0, 1)
+	currentItem := "Bee Chair"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
+
+    else if (item = 9) {
+        uiUniversal("6363636363636363636363636363636364646464646464646464646460646464", 0, 1)
+	currentItem := "Honey Torch"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 50
+    }
+
+    else if (item = 10) {
+        uiUniversal("636363636363636363636363636363636464646464646464646464646064646464", 0, 1)
+	currentItem := "Honey Walkway"
+
+        quickDetect(0x26EE26, 0x1DB31D, 5, 0.4262, 0.2903, 0.6918, 0.8208)
+        Sleep, 100
+	SendDiscordMessage(webhookURL, "Attempted to buy " . currentItem . ".")
+        Sleep, 300
+    }
+}
 
     SendDiscordMessage(webhookURL, "Honey Shop Closed.")
 
@@ -1823,10 +1925,6 @@ HoneyShopPath:
         uiUniversal("626066666606", 1, 1)
         SendDiscordMessage(webhookURL, "**[HONEY COMPLETED]**")
     }
-			Sleep, % FastMode ? 150 : 1500
-        Send, {i down}
-        Sleep, 65
-        Send, {i up}
 return
 	
 CosmeticShopPath:
@@ -1836,7 +1934,7 @@ CosmeticShopPath:
     Sleep, 100
     uiUniversal("61616161606")
     Sleep, % fastmode ? 100 : 500
-    Send {2}
+    Send {0}
     Sleep, % fastmode ? 100 : 500
     SafeClickRelative(0.5, 0.5)
     Sleep, % fastmode ? 800 : 1000
