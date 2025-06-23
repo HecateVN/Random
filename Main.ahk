@@ -1332,6 +1332,8 @@ UpdateKeybind:
 UpdateCraftLock:
 
     Gui, Submit, NoHide
+    ManualSeedCraftLock := ManualSeedCraftLock * 60000
+    ManualBearCraftLock := ManualBearCraftLock * 60000
     IniWrite, %ManualSeedCraftLock%, %settingsFile%, Main, ManualSeedCraftLock
     IniWrite, %ManualBearCraftLock%, %settingsFile%, Main, ManualBearCraftLock
     Return
