@@ -3740,7 +3740,7 @@ SummerHarvestPath:
         Sleep, 100
         Send, {e down}
         ToolTip, Collecting Fruits. Please Wait~
-        Sleep, % (30 * 1000) ; Hold for 30 sec
+        Sleep, 30000 ; Hold for 30 sec
         Send, {e up}
         ToolTip, Done!
         ; Repositioning Camera After Collect
@@ -3993,16 +3993,16 @@ SaveSettings:
     Loop, % bearCraftingItems.Length()
     	IniWrite, % (BearCraftingItem%A_Index% ? 1 : 0), %settingsFile%, BearCrafting, Item%A_Index%
 
-    IniWrite, % AutoAlign%,         %settingsFile%, Main, AutoAlign
-    IniWrite, % PingSelected%,      %settingsFile%, Main, PingSelected
-    IniWrite, % MultiInstanceMode%, %settingsFile%, Main, MultiInstanceMode
-    IniWrite, % UINavigationFix%,   %settingsFile%, Main, UINavigationFix
-    IniWrite, % BuyAllCosmetics%,   %settingsFile%, Cosmetic, BuyAllCosmetics
-    IniWrite, % SelectAllEggs%,     %settingsFile%, Egg, SelectAllEggs
-    IniWrite, % SelectAllHoney%,    %settingsFile%, Honey, SelectAllHoney
-    IniWrite, % AutoHoney%,         %settingsFile%, AutoHoney, AutoHoneySetting
-    IniWrite, % autoSummerHarvest,  %settingsFile%, Main, SummerHarvest
-    IniWrite, % numberOfCycle,      %settingsFile%, Main, NumberOfCycle
+    IniWrite, %AutoAlign%,         %settingsFile%, Main, AutoAlign
+    IniWrite, %PingSelected%,      %settingsFile%, Main, PingSelected
+    IniWrite, %MultiInstanceMode%, %settingsFile%, Main, MultiInstanceMode
+    IniWrite, %UINavigationFix%,   %settingsFile%, Main, UINavigationFix
+    IniWrite, %BuyAllCosmetics%,   %settingsFile%, Cosmetic, BuyAllCosmetics
+    IniWrite, %SelectAllEggs%,     %settingsFile%, Egg, SelectAllEggs
+    IniWrite, %SelectAllHoney%,    %settingsFile%, Honey, SelectAllHoney
+    IniWrite, %AutoHoney%,         %settingsFile%, AutoHoney, AutoHoneySetting
+    IniWrite, %autoSummerHarvest%,  %settingsFile%, Main, SummerHarvest
+    IniWrite, %numberOfCycle%,      %settingsFile%, Main, NumberOfCycle
 
 Return
 
