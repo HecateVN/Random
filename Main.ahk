@@ -1680,7 +1680,7 @@ autoCollectSummerHarvest:
     ; queues if its not the first cycle and the time is a multiple of 60
     if (cycleCount > 0 && Mod(currentMinute, 60) = 0 && currentMinute != lastSummerHarvestMinute) {
         lastSummerHarvestMinute := currentMinute
-        SetTimer, PushautoSummerHarvest, -8000
+        SetTimer, PushautoSummerHarvest, -2000
     }
 
 Return
@@ -1733,7 +1733,7 @@ AutoSeedCraft:
 
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastSeedCraftMinute) {
         lastSeedCraftMinute := currentMinute
-        SetTimer, PushSeedCraft, -8000
+        SetTimer, PushSeedCraft, -2000
     }
 Return
 
@@ -1764,7 +1764,7 @@ if (bearCraftingLocked = 1)
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastBearCraftMinute) {
         lastBearCraftMinute := currentMinute
         bearCraftQueued := true
-        SetTimer, PushBearCraft, -8000
+        SetTimer, PushBearCraft, -2000
     }
 Return
 
@@ -1851,10 +1851,6 @@ SetToolTip:
     if (BuyAllCosmetics) {
         tooltipText .= "Cosmetic Shop: " . cosText . "`n"
     }
-    if (autoSummerHarvest) {
-        tooltipText .= "Summer Harvest: " . summerText . "`n"
-    }
-
 
 
     if (tooltipText != "") {
@@ -1872,6 +1868,9 @@ Return
 SetTimers:
 
     SetTimer, UpdateTime, 1000
+
+    autoSummerHarvestActive := 1
+    SetTimer, autoCollectSummerHarvest, 1000 ; checks every second if it should queue
 
     if (selectedSeedItems.Length()) {
         actionQueue.Push("BuySeed")
@@ -1919,12 +1918,7 @@ SetTimers:
     bearCraftingAutoActive := 1
     SetTimer, AutoBearCraft, 1000 ; checks every second if it should queue
     
-    if (autoSummerHarvest) {
-        actionQueue.Push("SubmitHarvest")
-    }
-    autoSummerHarvestActive := 1
-    SetTimer, autoCollectSummerHarvest, 1000 ; checks every second if it should queue
-
+    
 Return
 
 UpdateTime:
@@ -3723,6 +3717,7 @@ Return
 SummerHarvestPath:
 
     cycleCounter := 0
+    actionQueue := []
 
     if(LoadInputs()){
         ToolTip, No Saved Path Found! `n Skipping Summer Harvest Path
@@ -3772,6 +3767,8 @@ SummerHarvestPath:
         uiUniversal(11110)
     }
     cycleCounter := 0 ;reset cycle count
+    Sleep, 500
+    actionQueue.Push("BuyEggShop")
     SendDiscordMessage(webhookURL, "**[Summer Harvest Finished]**")
     
 Return
