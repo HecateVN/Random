@@ -881,7 +881,7 @@ ShowGui:
     Gui, Margin, 10, 10
     Gui, Color, 0x202020
     Gui, Font, s9 cWhite, Segoe UI
-    Gui, Add, Tab, x10 y10 w500 h400 vMyTab, Seeds|Gears|Eggs|Cosmetics|Honey|Seed Crafting|Bear Crafting|Settings
+    Gui, Add, Tab, x10 y10 w600 h400 vMyTab, Seeds|Gears|Eggs|Cosmetics|SeedCrafting|BearCrafting|Settings|SummerHarvest
 
     Gui, Tab, 1
     Gui, Font, s9 c90EE90 Bold, Segoe UI
@@ -949,31 +949,6 @@ ShowGui:
 
     Gui, Tab, 5
     Gui, Font, s9 cWhite Bold, Segoe UI
-    Gui, Add, GroupBox, x23 y50 w475 h340 cFFD700, Honey Shop  ; Golden color
-    IniRead, AutoHoneySetting, %settingsFile%, AutoHoney, AutoHoneySetting, 0
-    Gui, Add, Checkbox, % "x280 y90 vAutoHoney gSaveAutoHoney c00FF00 " . (AutoHoneySetting ? "Checked" : ""), Enable Turn in Pollinated
-; Read stored checkbox states from settings.ini
-    IniRead, SelectAllHoney, %settingsFile%, Honey, SelectAll, 0
-    Gui, Add, Checkbox, % "x50 y90 vSelectAllHoney gHandleSelectAll cFFD700 " . (SelectAllHoney ? "Checked" : ""), Select All Honey Shop Items
-
-    Loop, % honeyItems.Length() {
-        IniRead, hVal, %settingsFile%, Honey, Item%A_Index%, 0
-        if (A_Index > 6) { 
-            col := 250  
-            idx := A_Index - 6
-            yBase := 150 
-        } else {                                ; splits the honey section between two columns 
-            col := 50 
-            idx := A_Index
-            yBase := 150
-        }
-        y := yBase + (idx - 1) * 25 
-        Gui, Add, Checkbox, % "x" col " y" y " vHoneyItem" A_Index " gHandleSelectAll cWhite " . (hVal ? "Checked" : ""), % honeyItems[A_Index]
-    }
-
-
-    Gui, Tab, 6
-    Gui, Font, s9 cWhite Bold, Segoe UI
     Gui, Add, GroupBox, x23 y50 w475 h340 cFFD700, Seed Crafting  ; Golden color
     Loop, % seedCraftingItems.Length() {
         IniRead, hVal, %settingsFile%, SeedCrafting, Item%A_Index%, 0
@@ -990,7 +965,7 @@ ShowGui:
 	Gui, Add, Checkbox, % "x" col " y" y " vSeedCraftingItem" A_Index " gHandleSelectAll cWhite " . (hVal ? "Checked" : ""), % seedCraftingItems[A_Index]
     }
 
-    Gui, Tab, 7
+    Gui, Tab, 6
     Gui, Font, s9 cWhite Bold, Segoe UI
     Gui, Add, GroupBox, x23 y50 w475 h340 cFFD700, Bear Crafting  ; Golden color
 
@@ -1010,7 +985,7 @@ ShowGui:
     }
 
 
-    Gui, Tab, 8
+    Gui, Tab, 7
     Gui, Font, s9 cWhite Bold, Segoe UI
 
     ; opt1 := (selectedResolution = 1 ? "Checked" : "")
@@ -1115,154 +1090,37 @@ ShowGui:
     Gui, Add, Button, x35 y340 w150 h40 gStartScanMultiInstance Background202020, Start Macro (F5)
     Gui, Add, Button, x335 y340 w150 h40 gQuit Background202020, Stop Macro (F7)
 
+    Gui, Show, w520 h425, Grow a Garden Macro Hecate
 
+    Gui, Tab, 8
+    Gui, Font, s9 cWhite Bold, Segoe UI
+    Gui, Add, GroupBox, x23 y50 w475 h340 cfad15f, Summer Harvest
+    Gui, Add, Button, x40 y80 w120 h40 gToggleRecording Background202020, Record New Path `n(F1)
+    Gui, Add, Button, x200 y80 w120 h40 gDemoInput Background202020, Test Path `n(F2)
+    Gui, Add, Button, x360 y80 w120 h40 gLoadInputs Background202020, Load Saved Path `n(F3)
+    IniRead, autoSummerHarvest, %settingsFile%, Main, SummerHarvest, 0
+    Gui, Add, Checkbox, % "x40 y150 vautoSummerHarvest cfad15f " . (autoSummerHarvest ? "Checked" : ""), Auto-Collect & Submit Summer Harvest
 
-    Gui, Show, w520 h425, Grow a Garden Macro [Crafting] by X6M-xTazerTx-Yark Spade-Moris :)
-
-    Gui, Add, Button, x240 y355 w40 h25 gGui2, Help
     
-    Gui, Add, Button, x370 y167 w115 h25 gGui3, bee Cheat Sheet
+    Gui, Add, Text, x280 y150 cfad15f, |   Number of Cycle:
+    IniRead, savedNumberOfCycle, %settingsFile%, Main, NumberOfCycle
+    if (savedNumberOfCycle = "ERROR" || savedNumberOfCycle = "")
+        savedNumberOfCycle := 3
+    Gui, Font, s8 c000000 Bold, Segoe UI
+    Gui, Add, Edit, x400 y150 w25 h18 vnumberOfCycle +BackgroundFFFFFF, %savedNumberOfCycle%
+    Gui, Font, s8 cD3D3D3 Bold, Segoe UI
+    Gui, Add, Button, x430 y150 w35 h18 gUpdateNumberOfCycle Background202020, Save
+    IniRead, savedNumberOfCycle, %settingsFile%, Main, NumberOfCycle
 
-    Gui, Add, Button, x370 y202 w115 h25 gGui4, Eggs Cheat Sheet
-
-    Gui, Add, Button, x370 y237 w115 h25 , WIP
-
-    Gui, Add, Button, x370 y272 w115 h25 , WIP
-
-    Gui, Add, Button, x370 y307 w115 h25 , WIP    
-
-Return
-
-Gui2:
-	Gui, 2:Show, x200 y200 w520 h425
-		Gui, 2:+Resize +MinimizeBox +SysMenu
-		Gui, 2:Margin, 10, 10
-		Gui, 2:Color, 0x202020
-		Gui, 2:Font, s9 cWhite, Segoe UI
-		Gui, 2:Add, Tab, x10 y10 w495 h400 , Help Window|How to set up|Common issues|Manual Alignment|multi instance
-	
-	Gui, 2: Tab, 1
-	Gui, 2: Font, s9 cWhite norm, Segoe UI
-	Gui, 2: Add, GroupBox, x20 y50 w475 h350 cD3D3D3,
-	Gui, 2: Add, Text, x35 y75 w450 h300,
-(
-Welcomed  to the help tab
-
-This window is  intended for helpping trouble shoot and setting up the macro without the help of anyone please check the other tabs
-
-
-
-First and foremost if its your fist time using the macro and  downloading ahk 1.1 please restart your computer because ahk did not boot properlly
-
-Also extract the  entire file and dont have them spread around it will lead to the macro failing to run properly
-
-
-
-Newest known bug and fix:
-The shovel bugg where your navigation key start on the toolbar and the fix for that is just rejoining till you dont have it
-
-)
-	
-		Gui, 2: Tab, 2
-		Gui, 2: Font, s9 cWhite norm, Segoe UI
-		Gui, 2: Add, GroupBox, x23 y50 w475 h350 cD3D3D3,
-		
-		Gui, 2: Add, Text, x35 y75 w450 h300,
-
-		(
-This is what you should do to run the macro
-
-
-In roblox setting disable shiftlock, put the camera mode in default and enable ui navigation
-
-Turn on auto-align
-
-Disable fastmode
-
-Input your navigation key and forward movement key in the macro settings
-Place the recall wrench is you 2nd toolbar slot and fill the rest of the slot with anything else
-
-Do not start the macro with ui navigation on
-
-
-
-And start the macro with f5 and stop it with f7 (fn+f5 and fn+f7 for small keyboard)
-Also you can force shutdown the macro with Rshift.
-)
-		Gui, 2: Tab, 3
-		Gui, 2: Font, s9 cWhite norm, Segoe UI
-		Gui, 2:Add, GroupBox, x23 y50 w475 h350 cD3D3D3,
-		
-		Gui, 2:Add, Text, x35 y75 w450 h300,
-(
-The macro isnt clicking where it should  to open the shops? 
-
-Make sure to run the macro in 1920x1080 100 or 2560x1440 150 or any 16:9 resolustion
-Also disable hdr or any  colour altering display settings 
-
-Rhe macro is missing the eggs ?
-
-Remove or pet grey mouse or any movement speed pets
-
-
-)
-		Gui, 2: Tab, 4
-		Gui, 2: Font, s9 cWhite norm, Segoe UI
-		Gui, 2: Add, GroupBox, x23 y50 w475 h350 cD6D6D6, !!! do not do this if you use auto-align!!!
-		
-		Gui, 2:Add, Text, x35 y69 w450 h300,
-(
-You must be in that exact camera position for manual alignment to work and same for the zoom level.
-
-Failling to align correctly will lead to drifting wich will break some of the shops
-)
-Gui, 2:Add, Picture, x35 y145 w450 h250, % mainDir "Images\\camalign.png"
-
-		Gui, 2: Tab, 5
-		Gui, 2: Font, s9 cWhite norm, Segoe UI
-		Gui, 2: Add, GroupBox, x23 y50 w475 h350 cD6D6D6, 
-		
-		Gui, 2:Add, Text, x35 y69 w450 h300,
-		(
-Using multy instance mode is very simple just get yourself multiple roblox window and the macro will do all the works itself.
-
-
-this can be donr by using bloxstarp or any other means of generating orther roblox instance.
-
-
-but be carefull depending on wich client you use you might get banned from roblox beacause of the recent modified client ban that roblox implemented.
-)
-Return
-
-Gui3:
-    Gui, 3:Show, x200 y40 w440 h969 
-    Gui, 3:+Resize +MinimizeBox +SysMenu 
-    Gui, 3:Margin, 10, 10
-    Gui, 3:Color, c244f29
-    Gui, 3:Add, Picture, x-21 y-10 w478 h1001, % mainDir "Images\\beequest.png"
-
-    Gui, 3:Add, Checkbox, cYellow x340 y3 gSwitch, Always on top
-Return
-Switch:
-	if(Always:=!Always)
-		Gui,+AlwaysOnTop
-	else
-		Gui,-AlwaysOnTop
-	return
-Gui4:
-    Gui, 4:Show, x200 y40 w582 h938
-    Gui, 4:+Resize +MinimizeBox +SysMenu 
-    Gui, 4:Margin, 10, 10
-    Gui, 4:Color, c244f29
-    Gui, 4:Add, Picture, x-21 y-10 w619 h969, % mainDir "Images\\eggs.png"
-
-    Gui, 4:Add, Checkbox, cYellow x484 y3 gSwitch, Always on top
-Return
-
-
-
-
-
+    Gui, Font, s14 cD3D3D3 Bold, Segoe UI
+    Gui, Add, Text, x40 y170, How to Use:
+    Gui, Font, s8 cD3D3D3 Bold, Segoe UI
+    Gui, Add, Text, x50 y200, Step 1: Press F1 and wait the alignment to finish.
+    Gui, Add, Text, x50 y217, Step 2: After the alignment finishes, proceed to use only the keyboard `n to navigate to your target plant to harvest.
+    Gui, Add, Text, x50 y247, Step 3: Once you finished to navigate to your target plant, Press F1 `n again to stop recording the path. 
+    Gui, Add, Text, x50 y277, Step 4: Press F2 to see if your path is correctly recorded. 
+    Gui, Add, Text, x50 y295, Step 5: Once it's all done, you can now start the macro and the Summer Harvest is `n now automated.
+    Gui, Font, s15 cD3D3D3 Bold, Segoe Script
 
 Return
 
@@ -1283,6 +1141,19 @@ UpdateUserID:
     if (discordUserID != "") {
         IniWrite, %discordUserID%, %settingsFile%, Main, DiscordUserID
         MsgBox, 0, Message, Discord UserID Saved
+    }
+
+Return
+
+UpdateNumberOfCycle:
+
+    Gui, Submit, NoHide
+
+    if (numberOfCycle != "") {
+        IniWrite, %numberOfCycle%, %settingsFile%, Main, NumberOfCycle
+        MsgBox, 0, Message, Number Of Cycle Saved!
+    }else{
+        MsgBox, 48, Warning, Number Of Cycle is empty or invalid.
     }
 
 Return
@@ -1834,7 +1705,7 @@ AutoSeedCraft:
     if (seedCraftingLocked = 1)
 	    return
 
-    if (cycleCount > 0 && Mod(currentMinute, 2) = 0 && currentMinute != lastSeedCraftMinute) {
+    if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastSeedCraftMinute) {
         lastSeedCraftMinute := currentMinute
         SetTimer, PushSeedCraft, -8000
     }
@@ -3812,6 +3683,255 @@ Cosmetic9:
 
 Return
 
+SummerHarvestPath:
+
+    cycleCounter := 0
+
+    if(LoadInputs()){
+        ToolTip, No Saved Path Found! `n Skipping Summer Harvest Path
+        Sleep, 5000
+        return
+    }
+    SendDiscordMessage(webhookURL, "**[Summer Harvest Started]**")
+    IniRead, numberOfCycle, %settingsFile%, Main, NumberOfCycle
+    if (numberOfCycle = "ERROR" || numberOfCycle = "")
+        numberOfCycle := 3
+    Loop, %numberOfCycle% {
+        cycleCounter++
+        SendDiscordMessage(webhookURL, "**Cycle Number: ** **" . cycleCounter . "** out of **" . numberOfCycle . "**")
+        uiUniversal(11110)
+        PlayInputs()
+        Sleep, 100
+        Send, {e down}
+        ToolTip, Collecting Fruits. Please Wait~
+        Sleep, % (30 * 1000) ; Hold for 30 sec
+        Send, {e up}
+        ToolTip, Done!
+        ; Repositioning Camera After Collect
+        Sleep, 1000
+        ToolTip
+        uiUniversal(11110)
+        Sleep, 100
+        uiUniversal(111110)
+        Sleep, 100
+        Send, {d down}
+        Sleep, % ((9 * 1000) + 500) ; Hold for 9.5 sec
+        Send, {d up}
+        Sleep, 100
+        Send, {s down}
+        Sleep, 550
+        Send, {s up}
+        Sleep, 100
+        Send, {d down}
+        Sleep, 350
+        Send, {d up}
+        ; Repositioning Camera View
+        Sleep, 500
+        ; Talk To NPC
+        Send, e
+        Sleep, 1500
+        SafeClickRelative(0.60, 0.53)
+        Sleep, 1000
+        uiUniversal(11110)
+    }
+    cycleCounter := 0 ;reset cycle count
+    SendDiscordMessage(webhookURL, "**[Summer Harvest Finished]**")
+    
+Return
+
+; === Toggle Recording ===
+ToggleRecording() {
+    global recording, inputList, startTime, lastEventTime, keyStates
+
+    if (!recording) {
+        Gosub, alignment
+        recording := true
+        inputList := []
+        keyStates := {}
+        startTime := A_TickCount
+        lastEventTime := startTime
+        SetTimer, MonitorInputs, 10
+        ToolTip Recording started... (Press F1 to stop)
+        Sleep, 1500
+    } else {
+        recording := false
+        SetTimer, MonitorInputs, Off
+        ToolTip
+        SaveInputs()  ; Save when stopping
+        MsgBox % "Recording stopped. " inputList.MaxIndex() " events recorded and saved."
+    }
+}
+
+; === Playback ===
+DemoInput(){
+    global inputList, playback
+
+    if (inputList.MaxIndex() = "")
+    {
+        MsgBox No input recorded.
+        return
+    }
+    Gosub, alignment
+    PlayInputs()
+}
+
+PlayInputs() {
+    global inputList, playback
+
+    if (inputList.MaxIndex() = "")
+    {
+        ToolTip, No input recorded!
+        return
+    }
+    ; Gosub, alignment
+    /*
+    Sleep, 1000
+    uiUniversal(11110)
+    Sleep, 100
+    */
+    playback := true
+    ToolTip Emulating Recorded Path...
+    for index, item in inputList {
+        Sleep, % item.time
+
+        if (item.type = "key") {
+            if (item.event = "down")
+                SendInput % "{" item.key " down}"
+            else if (item.event = "up")
+                SendInput % "{" item.key " up}"
+        } else if (item.type = "mouse") {
+            MouseMove, % item.x, % item.y, 0
+            if (item.button = "LButton")
+                Click, left
+            else if (item.button = "RButton")
+                Click, right
+            else if (item.button = "MButton")
+                Click, middle
+        }
+    }
+    ToolTip
+    playback := false
+}
+
+; === Input Monitoring Timer ===
+MonitorInputs:
+    global inputList, lastEventTime, keyStates
+
+    ; Mouse buttons
+    for index, btn in ["LButton", "RButton", "MButton"] {
+        state := GetKeyState(btn, "P")
+        prev := keyStates.HasKey(btn) ? keyStates[btn] : 0
+        if (state && !prev) {
+            PushEvent("mouse", btn, A_TickCount)
+        }
+        keyStates[btn] := state
+    }
+
+    ; Keyboard keys
+    Loop, 255 {
+        vk := A_Index
+        key := GetKeyName(Format("vk{:02X}", vk))
+        if (key = "")
+            continue
+
+        ; Prevent recording toggle/play/load keys
+        if (key = "F1" || key = "F2" || key = "F3")
+            continue
+
+        state := GetKeyState(key, "P")
+        prev := keyStates.HasKey(key) ? keyStates[key] : 0
+        now := A_TickCount
+
+        if (state && !prev) {
+            PushEvent("key", key, now, "down")
+        } else if (!state && prev) {
+            PushEvent("key", key, now, "up")
+        }
+        keyStates[key] := state
+    }
+return
+
+; === Push Recorded Event ===
+PushEvent(type, keyOrBtn, time, event:="") {
+    global inputList, lastEventTime
+
+    elapsed := time - lastEventTime
+    lastEventTime := time
+
+    if (type = "key") {
+        inputList.Push({type: "key", key: keyOrBtn, event: event, time: elapsed})
+    } else if (type = "mouse") {
+        MouseGetPos, x, y
+        inputList.Push({type: "mouse", button: keyOrBtn, x: x, y: y, time: elapsed})
+    }
+}
+
+; === Save Inputs to File ===
+SaveInputs() {
+    global inputList
+    macroFile := A_ScriptDir "\savedPath.ini"
+    FileDelete, %macroFile%
+
+    Loop, % inputList.MaxIndex()
+    {
+        i := A_Index
+        event := inputList[i]
+        section := "Event" . i
+
+        IniWrite, % event.type,   %macroFile%, %section%, Type
+        IniWrite, % event.time,   %macroFile%, %section%, Delay
+
+        if (event.type = "key") {
+            IniWrite, % event.key,    %macroFile%, %section%, Key
+            IniWrite, % event.event,  %macroFile%, %section%, Action
+        } else if (event.type = "mouse") {
+            IniWrite, % event.button, %macroFile%, %section%, Button
+            IniWrite, % event.x,      %macroFile%, %section%, X
+            IniWrite, % event.y,      %macroFile%, %section%, Y
+        }
+    }
+    IniWrite, % inputList.MaxIndex(), %macroFile%, Info, TotalEvents
+}
+
+; === Load Inputs from File ===
+LoadInputs() {
+    global inputList
+    macroFile := A_ScriptDir "\savedPath.ini"
+
+    if (!FileExist(macroFile)) {
+        ToolTip, Load Failed! savedPath.ini not found!
+        return true
+    }
+
+    inputList := []
+    IniRead, totalEvents, %macroFile%, Info, TotalEvents, 0
+
+    Loop, %totalEvents%
+    {
+        section := "Event" . A_Index
+        IniRead, type,   %macroFile%, %section%, Type
+        IniRead, delay,  %macroFile%, %section%, Delay
+
+        if (type = "key") {
+            IniRead, key,    %macroFile%, %section%, Key
+            IniRead, action, %macroFile%, %section%, Action
+            inputList.Push({type: "key", key: key, event: action, time: delay})
+        } else if (type = "mouse") {
+            IniRead, button, %macroFile%, %section%, Button
+            IniRead, x,      %macroFile%, %section%, X
+            IniRead, y,      %macroFile%, %section%, Y
+            inputList.Push({type: "mouse", button: button, x: x, y: y, time: delay})
+        }
+    }
+    if(totalEvents){
+        ToolTip, % "Load Successful! " totalEvents " events loaded from the Saved Path!"
+    }else{
+        ToolTip, Empty Saved Path! No Paths were loaded.
+    }
+    Sleep, 1500
+    ToolTip
+}
+
 ; save settings and start/exit
 
 SaveSettings:
@@ -3885,7 +4005,16 @@ Quit:
 
 Return
 
-F1::
+F1::ToggleRecording()
+F2::DemoInput()
+F3::LoadInputs()
+
+F5::
+    SetTimer, AutoReconnect, -1200000
+    Gosub, StartScanMultiInstance
+Return
+
+F6::
     MouseGetPos, mx, my
     WinGetPos, winX, winY, winW, winH, ahk_exe RobloxPlayerBeta.exe
     xRatio := (mx - winX) / winW
@@ -3893,11 +4022,6 @@ F1::
     PixelGetColor, winC, mx, my
     MsgBox, Relative Position:`nX: %xRatio%`nY: %yRatio%`nColor: %winC%
 return
-
-F5::
-    SetTimer, AutoReconnect, -1200000
-    Gosub, StartScanMultiInstance
-Return
 
 F7::
 
