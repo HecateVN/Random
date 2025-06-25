@@ -1466,6 +1466,7 @@ StartScanMultiInstance:
     global lastHoneyRetryMinute := -1
     global lastSeedCraftMinute := -1
     global lastBearCraftMinute := -1
+    global lastSummerHarvestMinute := -1
 
     started := 1
     cycleFinished := 1
@@ -1673,6 +1674,30 @@ BuyCosmeticShop:
 
 Return
 
+autoCollectSummerHarvest:
+
+    ; queues if its not the first cycle and the time is a multiple of 60
+    if (cycleCount > 0 && Mod(currentMinute, 60) = 0 && currentMinute != lastSummerHarvestMinute) {
+        lastSummerHarvestMinute := currentMinute
+        SetTimer, PushautoSummerHarvest, -8000
+    }
+
+Return
+
+PushautoSummerHarvest:
+
+    actionQueue.Push("SubmitHarvest")
+
+Return
+
+SubmitHarvest:
+
+    currentSection := "SubmitHarvest"
+    if (autoSummerHarvest) {
+        Gosub, SummerHarvestPath
+    }
+
+Return
 
 AutoHoney:
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastAutoHoneyMinute) {
@@ -1825,6 +1850,11 @@ SetToolTip:
     if (BuyAllCosmetics) {
         tooltipText .= "Cosmetic Shop: " . cosText . "`n"
     }
+    if (autoSummerHarvest) {
+        tooltipText .= "Summer Harvest: " . summerText . "`n"
+    }
+
+
 
     if (tooltipText != "") {
         CoordMode, Mouse, Screen
@@ -1888,6 +1918,12 @@ SetTimers:
     bearCraftingAutoActive := 1
     SetTimer, AutoBearCraft, 1000 ; checks every second if it should queue
     
+    if (autoSummerHarvest) {
+        actionQueue.Push("SubmitHarvest")
+    }
+    autoSummerHarvestActive := 1
+    SetTimer, autoCollectSummerHarvest, 1000 ; checks every second if it should queue
+
 Return
 
 UpdateTime:
@@ -3957,14 +3993,16 @@ SaveSettings:
     Loop, % bearCraftingItems.Length()
     	IniWrite, % (BearCraftingItem%A_Index% ? 1 : 0), %settingsFile%, BearCrafting, Item%A_Index%
 
-    IniWrite, %AutoAlign%, %settingsFile%, Main, AutoAlign
-    IniWrite, %PingSelected%, %settingsFile%, Main, PingSelected
-    IniWrite, %MultiInstanceMode%, %settingsFile%, Main, MultiInstanceMode
-    IniWrite, %UINavigationFix%, %settingsFile%, Main, UINavigationFix
-    IniWrite, %BuyAllCosmetics%, %settingsFile%, Cosmetic, BuyAllCosmetics
-    IniWrite, %SelectAllEggs%, %settingsFile%, Egg, SelectAllEggs
-    IniWrite, %SelectAllHoney%, %settingsFile%, Honey, SelectAllHoney
-    IniWrite, %AutoHoney%, %settingsFile%, AutoHoney, AutoHoneySetting
+    IniWrite, % AutoAlign%,         %settingsFile%, Main, AutoAlign
+    IniWrite, % PingSelected%,      %settingsFile%, Main, PingSelected
+    IniWrite, % MultiInstanceMode%, %settingsFile%, Main, MultiInstanceMode
+    IniWrite, % UINavigationFix%,   %settingsFile%, Main, UINavigationFix
+    IniWrite, % BuyAllCosmetics%,   %settingsFile%, Cosmetic, BuyAllCosmetics
+    IniWrite, % SelectAllEggs%,     %settingsFile%, Egg, SelectAllEggs
+    IniWrite, % SelectAllHoney%,    %settingsFile%, Honey, SelectAllHoney
+    IniWrite, % AutoHoney%,         %settingsFile%, AutoHoney, AutoHoneySetting
+    IniWrite, % autoSummerHarvest,  %settingsFile%, Main, SummerHarvest
+    IniWrite, % numberOfCycle,      %settingsFile%, Main, NumberOfCycle
 
 Return
 
