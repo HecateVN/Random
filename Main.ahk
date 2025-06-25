@@ -51,6 +51,7 @@ global honeyAutoActive := 0
 global autoHoneyActive := 0
 global seedCraftingAutoActive := 0
 global bearCraftingAutoActive := 0
+global autoSummerHarvestActive := 0
 global cosmeticAutoActive := 0
 global lastHoneyHour := -1
 global lastHoneyShopMinute := -1
@@ -3740,7 +3741,7 @@ SummerHarvestPath:
         Sleep, 100
         Send, {e down}
         ToolTip, Collecting Fruits. Please Wait~
-        Sleep, 30000 ; Hold for 30 sec
+        Sleep, 30000
         Send, {e up}
         ToolTip, Done!
         ; Repositioning Camera After Collect
@@ -3751,7 +3752,7 @@ SummerHarvestPath:
         uiUniversal(111110)
         Sleep, 100
         Send, {d down}
-        Sleep, % ((9 * 1000) + 500) ; Hold for 9.5 sec
+        Sleep, % 9500
         Send, {d up}
         Sleep, 100
         Send, {s down}
