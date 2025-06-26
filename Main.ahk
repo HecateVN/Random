@@ -1700,7 +1700,7 @@ Return
 
 autoCollectSummerHarvest:
 
-    if (cycleCount > 0 && Mod(currentHour, 1) = 0 && currentHour != lastSummerHarvestHour) {
+    if (cycleCount > 0 && currentMinute = 0 && Mod(currentHour, 1) = 0 && currentHour != lastSummerHarvestHour) {
         lastSummerHarvestHour := currentHour
         SetTimer, PushautoSummerHarvest, -2000
     }
