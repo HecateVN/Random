@@ -1113,6 +1113,13 @@ ShowGui:
     Gui, Add, Button, x430 y150 w35 h18 gUpdateNumberOfCycle Background202020, Save
     IniRead, savedNumberOfCycle, %settingsFile%, Main, NumberOfCycle
 
+    Gui, Font, s9 cWhite Bold, Segoe UI
+    Gui, Add, Text, x280 y170 cfad15f, |   Collect Method
+    Gui, Font, s8 cBlack, Segoe UI
+    IniRead, savedHarvestSpeed, %settingsFile%, Main, HarvestSpeed, Stable
+    Gui, Add, DropDownList, vsavedHarvestSpeed gUpdateHarvestSpeed x400 y170 w66, Stable|Fast
+    GuiControl, ChooseString, savedHarvestSpeed, %savedHarvestSpeed%
+
     Gui, Font, s14 cD3D3D3 Bold, Segoe UI
     Gui, Add, Text, x40 y170, How to Use:
     Gui, Font, s8 cD3D3D3 Bold, Segoe UI
@@ -1229,6 +1236,19 @@ UpdateSpeed:
         MsgBox, 0, Message, % "Macro speed set to " . SavedSpeed . ". Recommended for lower end devices."
     }
 
+Return
+
+UpdateHarvestSpeed:
+    Gui, Submit, NoHide
+
+    IniWrite, %savedHarvestSpeed%, %settingsFile%, Main, MacroSpeed
+    GuiControl, ChooseString, savedHarvestSpeed, %savedHarvestSpeed%
+    if (savedHarvestSpeed = "Fast") {
+        MsgBox, 0, Disclaimer, % "Harvest speed set to " . savedHarvestSpeed . ". Use it if you have clean garden ( Fast but Unstable [ Might Break ] )."
+    }
+    else {
+        MsgBox, 0, Message, % "Harvest speed set to " . savedHarvestSpeed . ". Recommended for stable collecting ( Messy Garden )."
+    }
 Return
 
 UpdateResolution:
@@ -1447,7 +1467,10 @@ SaveAutoHoney:
     IniWrite, %AutoHoney%, %settingsFile%, AutoHoney, AutoHoneySetting
 Return
 
-
+SpamE:
+    Sleep, 50
+    Send, e
+Return
 
 ; macro starts
 
@@ -1673,7 +1696,7 @@ BuyCosmeticShop:
         Gosub, CosmeticShopPath
     } 
 
-Returnw
+Return
 
 autoCollectSummerHarvest:
 
@@ -3722,27 +3745,47 @@ SummerHarvestPath:
         return
     }
     SendDiscordMessage(webhookURL, "**[Summer Harvest Started]**")
+
     IniRead, numberOfCycle, %settingsFile%, Main, NumberOfCycle
     if (numberOfCycle = "ERROR" || numberOfCycle = "")
         numberOfCycle := 3
     Loop, %numberOfCycle% {
         cycleCounter++
         SendDiscordMessage(webhookURL, "**Cycle Number: ** **" . cycleCounter . "** out of **" . numberOfCycle . "**")
-        uiUniversal(11110)
+        uiUniversal(51515151505)
         Sleep, 500
         PlayInputs()
         Sleep, 100
-        Send, {e down}
-        ToolTip, Collecting Fruits. Please Wait~
-        Sleep, 30000
-        Send, {e up}
-        ToolTip, Done!
+        If (savedHarvestSpeed == "Fast"){
+            Sleep, 100
+            Send, {Space Down}
+            Sleep, 100
+            SetTimer, SpamE, 10
+            ToolTip, Collecting Fruits fast. Please Wait~
+            Sleep, 20000
+            SetTimer, SpamE, Off
+            Sleep, 100
+            Send, {Space up}
+            Sleep, 100
+            ToolTip, Done!
+        } Else{
+            Sleep, 100
+            Send, {Space Down}
+            Sleep, 100
+            Send, {e down}
+            ToolTip, Collecting Fruits normal . Please Wait~ 
+            Sleep, 30000 ; Hold for 30 sec
+            Send, {e up}
+            Sleep, 100
+            Send, {Space up}
+            ToolTip, Done!
+        }
         ; Repositioning Camera After Collect
         Sleep, 1000
         ToolTip
-        uiUniversal(11110)
+        uiUniversal(51515151505)
         Sleep, 100
-        uiUniversal(111110)
+        uiUniversal(151515151505)
         Sleep, 100
         Send, {d down}
         Sleep, % 9500
@@ -3762,7 +3805,7 @@ SummerHarvestPath:
         Sleep, 1500
         SafeClickRelative(0.60, 0.53)
         Sleep, 1000
-        uiUniversal(11110)
+        uiUniversal(51515151505)
     }
     cycleCounter := 0 ;reset cycle count
     Sleep, 500
@@ -3807,17 +3850,36 @@ DemoInput(){
     Sleep, 500
     PlayInputs()
     Sleep, 100
-    Send, {e down}
-    ToolTip, Collecting Fruits. Please Wait~
-    Sleep, 30000
-    Send, {e up}
-    ToolTip, Done!
+    If (savedHarvestSpeed == "Fast"){
+        Sleep, 100
+        Send, {Space Down}
+        Sleep, 100
+        SetTimer, SpamE, 10
+        ToolTip, Collecting Fruits fast. Please Wait~
+        Sleep, 20000
+        SetTimer, SpamE, Off
+        Sleep, 100
+        Send, {Space up}
+        Sleep, 100
+        ToolTip, Done!
+    } Else{
+        Sleep, 100
+        Send, {Space Down}
+        Sleep, 100
+        Send, {e down}
+        ToolTip, Collecting Fruits normal . Please Wait~ 
+        Sleep, 30000 ; Hold for 30 sec
+        Send, {e up}
+        Sleep, 100
+        Send, {Space up}
+        ToolTip, Done!
+    }
     ; Repositioning Camera After Collect
     Sleep, 1000
     ToolTip
-    uiUniversal(11110)
+    uiUniversal(51515151505)
     Sleep, 100
-    uiUniversal(111110)
+    uiUniversal(151515151505)
     Sleep, 100
     Send, {d down}
     Sleep, % 9500
@@ -3837,7 +3899,7 @@ DemoInput(){
     Sleep, 1500
     SafeClickRelative(0.60, 0.53)
     Sleep, 1000
-    uiUniversal(11110)
+    uiUniversal(51515151505)
 }
 
 PlayInputs() {
@@ -3848,12 +3910,7 @@ PlayInputs() {
         ToolTip, No input recorded!
         return
     }
-    ; Gosub, alignment
-    /*
-    Sleep, 1000
-    uiUniversal(11110)
-    Sleep, 100
-    */
+
     playback := true
     ToolTip Emulating Recorded Path...
     for index, item in inputList {
@@ -4030,9 +4087,9 @@ SaveSettings:
     IniWrite, %SelectAllEggs%,     %settingsFile%, Egg, SelectAllEggs
     IniWrite, %SelectAllHoney%,    %settingsFile%, Honey, SelectAllHoney
     IniWrite, %AutoHoney%,         %settingsFile%, AutoHoney, AutoHoneySetting
-    IniWrite, %autoSummerHarvest%,  %settingsFile%, Main, SummerHarvest
-    IniWrite, %numberOfCycle%,      %settingsFile%, Main, NumberOfCycle
-
+    IniWrite, %autoSummerHarvest%, %settingsFile%, Main, SummerHarvest
+    IniWrite, %numberOfCycle%,     %settingsFile%, Main, NumberOfCycle
+    IniWrite, %savedHarvestSpeed%, %settingsFile%, Main, HarvestSpeed
 Return
 
 StopMacro(terminate := 1) {
