@@ -1467,7 +1467,7 @@ StartScanMultiInstance:
     global lastHoneyRetryMinute := -1
     global lastSeedCraftMinute := -1
     global lastBearCraftMinute := -1
-    global lastSummerHarvestMinute := -1
+    global lastSummerHarvestHour := -1
 
     started := 1
     cycleFinished := 1
@@ -1582,7 +1582,7 @@ AutoBuySeed:
     ; queues if its not the first cycle and the time is a multiple of 5
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastSeedMinute) {
         lastSeedMinute := currentMinute
-        SetTimer, PushBuySeed, -2000
+        SetTimer, PushBuySeed, -3000
     }
 
 Return
@@ -1606,7 +1606,7 @@ AutoBuyGear:
     ; queues if its not the first cycle and the time is a multiple of 5
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastGearMinute) {
         lastGearMinute := currentMinute
-        SetTimer, PushBuyGear, -2000
+        SetTimer, PushBuyGear, -3000
     }
 
 Return
@@ -1630,7 +1630,7 @@ AutoBuyEggShop:
     ; queues if its not the first cycle and the time is a multiple of 30
     if (cycleCount > 0 && Mod(currentMinute, 30) = 0 && currentMinute != lastEggShopMinute) {
         lastEggShopMinute := currentMinute
-        SetTimer, PushBuyEggShop, -2000
+        SetTimer, PushBuyEggShop, -3000
     }
 
 Return
@@ -1673,22 +1673,19 @@ BuyCosmeticShop:
         Gosub, CosmeticShopPath
     } 
 
-Return
+Returnw
 
 autoCollectSummerHarvest:
 
-    ; queues if its not the first cycle and the time is a multiple of 60
-    if (cycleCount > 0 && Mod(currentMinute, 60) = 0 && currentMinute != lastSummerHarvestMinute) {
-        lastSummerHarvestMinute := currentMinute
+    if (cycleCount > 0 && Mod(currentHour, 1) = 0 && currentHour != lastSummerHarvestHour) {
+        lastSummerHarvestHour := currentHour
         SetTimer, PushautoSummerHarvest, -2000
     }
 
 Return
 
 PushautoSummerHarvest:
-
     actionQueue.Push("SubmitHarvest")
-
 Return
 
 SubmitHarvest:
@@ -1703,7 +1700,7 @@ Return
 AutoHoney:
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastAutoHoneyMinute) {
         lastAutoHoneyMinute := currentMinute
-        SetTimer, PushAutoHoney, -2000
+        SetTimer, PushAutoHoney, -3000
     }
 Return
 
@@ -1733,7 +1730,7 @@ AutoSeedCraft:
 
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastSeedCraftMinute) {
         lastSeedCraftMinute := currentMinute
-        SetTimer, PushSeedCraft, -2000
+        SetTimer, PushSeedCraft, -3000
     }
 Return
 
@@ -1764,7 +1761,7 @@ if (bearCraftingLocked = 1)
     if (cycleCount > 0 && Mod(currentMinute, 5) = 0 && currentMinute != lastBearCraftMinute) {
         lastBearCraftMinute := currentMinute
         bearCraftQueued := true
-        SetTimer, PushBearCraft, -2000
+        SetTimer, PushBearCraft, -3000
     }
 Return
 
@@ -1935,7 +1932,6 @@ Return
 
 
 AutoReconnect:
-    global actionQueue
 
     If (MultiInstanceMode || failCount >= 5){
         started := 0
@@ -3721,6 +3717,7 @@ SummerHarvestPath:
 
     if(LoadInputs()){
         ToolTip, No Saved Path Found! `n Skipping Summer Harvest Path
+        SendDiscordMessage(webhookURL, "Failed To LoadInput [Error]" (PingSelected ? " <@" . discordUserID . ">" : "") )
         Sleep, 5000
         return
     }
@@ -3732,6 +3729,7 @@ SummerHarvestPath:
         cycleCounter++
         SendDiscordMessage(webhookURL, "**Cycle Number: ** **" . cycleCounter . "** out of **" . numberOfCycle . "**")
         uiUniversal(11110)
+        Sleep, 500
         PlayInputs()
         Sleep, 100
         Send, {e down}
@@ -3806,7 +3804,40 @@ DemoInput(){
         return
     }
     Gosub, alignment
+    Sleep, 500
     PlayInputs()
+    Sleep, 100
+    Send, {e down}
+    ToolTip, Collecting Fruits. Please Wait~
+    Sleep, 30000
+    Send, {e up}
+    ToolTip, Done!
+    ; Repositioning Camera After Collect
+    Sleep, 1000
+    ToolTip
+    uiUniversal(11110)
+    Sleep, 100
+    uiUniversal(111110)
+    Sleep, 100
+    Send, {d down}
+    Sleep, % 9500
+    Send, {d up}
+    Sleep, 100
+    Send, {s down}
+    Sleep, 550
+    Send, {s up}
+    Sleep, 100
+    Send, {d down}
+    Sleep, 350
+    Send, {d up}
+    ; Repositioning Camera View
+    Sleep, 500
+    ; Talk To NPC
+    Send, e
+    Sleep, 1500
+    SafeClickRelative(0.60, 0.53)
+    Sleep, 1000
+    uiUniversal(11110)
 }
 
 PlayInputs() {
