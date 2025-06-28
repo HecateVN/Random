@@ -513,11 +513,6 @@ searchItem(search := "nil") {
         uiUniversal("150524150505305", 0) 
         typeString(search)
         Sleep, 50
-
-        if (search = "recall") {
-            uiUniversal("4335505541555055", 1, 1)
-        }
-
         uiUniversal(10)
     }
     else { ;without UINavigationFix
@@ -527,10 +522,6 @@ searchItem(search := "nil") {
         Sleep, 50
         typeString(search)
         Sleep, 50
-
-        if (search = "recall") {
-            uiUniversal("22211550554155055", 1, 1)
-        }
 
         uiUniversal(10)
     }
@@ -671,6 +662,7 @@ quickDetectEgg(buyColor, variation := 20, x1Ratio := 0.0, y1Ratio := 0.0, x2Rati
     eggColorMap["Common Summer Egg"]    := "0xFFFF00"
     eggColorMap["Rare Summer Egg"]      := "0xAAFFFF"
     eggColorMap["Paradise Egg"]         := "0xFFCD32"
+    eggColorMap["Bee Egg"]              := "0xFFAA00"
 
     Loop, 5 {
         for rarity, color in eggColorMap {
@@ -842,32 +834,29 @@ quickDetect(color1, color2, variation := 10, x1Ratio := 0.0, y1Ratio := 0.0, x2R
 ; item arrays
 
 seedItems := ["Carrot Seed", "Strawberry Seed", "Blueberry Seed"
-             , "Tomato Seed", "Cauliflower Seed", "Watermelon Seed"
+             , "Tomato Seed", "Cauliflower Seed", "Watermelon Seed", "Rafflesia Seed"
              , "Green Apple Seed", "Avacado Seed", "Banana Seed", "Pineapple Seed"
              , "Kiwi Seed", "Bell Pepper Seed", "Prickly Pear Seed", "Loquat Seed"
-             , "Feijoa Seed", "Sugar Apple Seed"] ;
+             , "Feijoa Seed", "Pitcher Plant", "Sugar Apple Seed"] 
 
 gearItems := ["Watering Can", "Trowel", "Recall Wrench", "Basic Sprinkler", "Advanced Sprinkler"
-             , "Godly Sprinkler", "Tanning Mirror", "Master Sprinkler", "Cleaning Spray"
+             , "Godly Sprinkler", "Magnifying Glass", "Tanning Mirror", "Master Sprinkler", "Cleaning Spray"
              , "Favorite Tool", "Harvest Tool", "Friendship Pot"]
 
 eggItems := ["Common Egg", "Rare Summer Egg", "Common Summer Egg", "Paradise Egg", "Mythical Egg"
-             , "Bug Egg"]
+             , "Bug Egg", "Bee Egg"]
 
 cosmeticItems := ["Cosmetic 1", "Cosmetic 2", "Cosmetic 3", "Cosmetic 4", "Cosmetic 5"
              , "Cosmetic 6",  "Cosmetic 7", "Cosmetic 8", "Cosmetic 9"]
 
-honeyItems := ["Flower Seed Pack", "Lavender Seed", "Nectarshade Seed", "Nectarine Seed", "Hive Fruit Seed"
-	   , "Pollen Radar", "Nectar Staff", "Honey Sprinkler", "Bee Egg", "Bee Crate", "Honey Comb"
-             , "Bee Chair", "Honey Torch", "Honey Walkway"]
+harvestItems  := ["Summer Seed Pack", "Delphinium Seed", "Lily of the Valley Seed", "Traveler's Fruit Seed"
+                 , "Mutation Spray Burn", "Oasis Crate", "Oasis Egg", "Hamster"]
 
 bearCraftingItems := ["Lightning Rod", "Reclaimer", "Tropical Mist Sprinkler", "Berry Blusher Sprinkler", "Spice Spritzer Sprinkler", "Sweet Soaker Sprinkler"
-	  , "Flower Froster Sprinkler", "Stalk Sprout Sprinkler", "Mutation Spray Choc", "Mutation Spray Pollinated", "Mutation Spray Shocked"
-	  , "Honey Crafters Crate", "Anti Bee Egg", "Pack Bee"]
+	  , "Flower Froster Sprinkler", "Stalk Sprout Sprinkler", "Mutation Spray Choc", "Mutation Spray Chilled", "Mutation Spray Shocked"
+	  , "Anti Bee Egg", "Pack Bee"]
 
-seedCraftingItems := ["Crafters Seed Pack", "Manuka Flower", "Dandelion"
-                    , "Lumira", "Honeysuckle", "Bee Balm", "Nectar Thorn"
-                    , "Suncoil"]
+seedCraftingItems := ["Rafflesia" ,"Aloe Vera" ,"Guanabana"]
 
 settingsFile := A_ScriptDir "\settings.ini"
 
@@ -1298,7 +1287,7 @@ HandleSelectAll:
             Gosub, SaveSettings
     }
     else if (A_GuiControl = "SelectAllHoney") {
-        Loop, % honeyItems.Length()
+        Loop, % harvestItems .Length()
             GuiControl,, GearItem%A_Index%, % SelectAllHoney
             Gosub, SaveSettings
     }
@@ -1400,11 +1389,11 @@ UpdateSelectedItems:
             selectedEggItems.Push(eggItems[A_Index])
     }
 
-    selectedHoneyItems := []
+    selectedharvestItems  := []
 
-    Loop, % honeyItems.Length() {
+    Loop, % harvestItems .Length() {
         if (HoneyItem%A_Index%)
-            selectedHoneyItems.Push(honeyItems[A_Index])
+            selectedharvestItems .Push(harvestItems [A_Index])
     }
 
     selectedSeedCraftingItems := []
@@ -1916,7 +1905,7 @@ SetTimers:
     cosmeticAutoActive := 1
     SetTimer, AutoBuyCosmeticShop, 1000 ; checks every second if it should queue
 
-    if (selectedHoneyItems.Length()) {
+    if (selectedharvestItems .Length()) {
         actionQueue.Push("BuyHoney")
     }
 
@@ -2005,9 +1994,6 @@ alignment:
     SetTimer, HideTooltip, -2000
 
     SafeClickRelative(0.5, 0.5)
-    Sleep, 100
-
-    searchitem("recall")
 
     Sleep, 200
 
@@ -2378,7 +2364,6 @@ ClickFirstEight() {
         Sleep, % FastMode ? 50 : 200
         Send, {e}
 }
-
 
 AutoHoneyPath:
     WinActivate, ahk_exe RobloxPlayerBeta.exe
@@ -3057,17 +3042,6 @@ if (seedCraftActionQueue.Length() > 0) {
     uiUniversal("63636363636161616160")
     SendDiscordMessage(webhookURL, "Finished the seed crafting cycle.")
     Sleep, % FastMode ? 100 : 200
-    if (AutoAlign) {
-        GoSub, cameraChange
-        Sleep, 100
-        Gosub, zoomAlignment
-        Sleep, 100
-        GoSub, cameraAlignment
-        Sleep, 100
-        Gosub, characterAlignment
-        Sleep, 100
-        Gosub, cameraChange
-    }
 Return
 
 AutoBearCraftPath:
@@ -3200,7 +3174,7 @@ if (bearCraftActionQueue.Length() > 0) {
 	Sleep, 100
 
 	bearCraftingLocked := 1
-	SetTimer, UnlockBearCraft, -2700000
+	SetTimer, UnlockBearCraft, -1500000
 	SendDiscordMessage(webhookURL, "Attempted to craft " . currentItem . ".")
         bearCraftActionQueue.RemoveAt(1)
         Sleep, 50
@@ -3620,17 +3594,6 @@ if (bearCraftActionQueue.Length() > 0) {
     uiUniversal("63636363636161616160")
     SendDiscordMessage(webhookURL, "Finished the bear crafting cycle.")
     Sleep, % FastMode ? 100 : 200
-    if (AutoAlign) {
-        GoSub, cameraChange
-        Sleep, 100
-        Gosub, zoomAlignment
-        Sleep, 100
-        GoSub, cameraAlignment
-        Sleep, 100
-        Gosub, characterAlignment
-        Sleep, 100
-        Gosub, cameraChange
-    }
 Return
 
 UnlockSeedCraft:
@@ -3780,7 +3743,7 @@ SummerHarvestPath:
             Send, {Space up}
             ToolTip, Done!
         }
-        ; Repositioning Camera After Collect
+        ; Go to event shop
         Sleep, 1000
         ToolTip
         uiUniversal(51515151505)
@@ -3788,22 +3751,17 @@ SummerHarvestPath:
         uiUniversal(151515151505)
         Sleep, 100
         Send, {d down}
-        Sleep, % 9500
+        Sleep, 10100
         Send, {d up}
         Sleep, 100
-        Send, {s down}
-        Sleep, 550
-        Send, {s up}
-        Sleep, 100
-        Send, {d down}
-        Sleep, 350
-        Send, {d up}
-        ; Repositioning Camera View
+        Send, {Down down}
+        Sleep, 700
+        Send, {Down up}
         Sleep, 500
         ; Talk To NPC
         Send, e
         Sleep, 1500
-        SafeClickRelative(0.60, 0.53)
+        SafeClickRelative(0.65, 0.55)
         Sleep, 1000
         uiUniversal(51515151505)
     }
@@ -3874,7 +3832,7 @@ DemoInput(){
         Send, {Space up}
         ToolTip, Done!
     }
-    ; Repositioning Camera After Collect
+    ; Go to event shop
     Sleep, 1000
     ToolTip
     uiUniversal(51515151505)
@@ -3882,22 +3840,17 @@ DemoInput(){
     uiUniversal(151515151505)
     Sleep, 100
     Send, {d down}
-    Sleep, % 9500
-    Send, {d up}
+    Sleep, 10100
+    Send, {d Up}
     Sleep, 100
-    Send, {s down}
-    Sleep, 550
-    Send, {s up}
-    Sleep, 100
-    Send, {d down}
-    Sleep, 350
-    Send, {d up}
-    ; Repositioning Camera View
+    Send, {Down down}
+    Sleep, 700
+    Send, {Down up}
     Sleep, 500
     ; Talk To NPC
     Send, e
     Sleep, 1500
-    SafeClickRelative(0.60, 0.53)
+    SafeClickRelative(0.65, 0.55)
     Sleep, 1000
     uiUniversal(51515151505)
 }
@@ -4070,7 +4023,7 @@ SaveSettings:
     Loop, % seedItems.Length()
         IniWrite, % (SeedItem%A_Index% ? 1 : 0), %settingsFile%, Seed, Item%A_Index%
 
-    Loop, % honeyItems.Length()
+    Loop, % harvestItems .Length()
     	IniWrite, % (HoneyItem%A_Index% ? 1 : 0), %settingsFile%, Honey, Item%A_Index%
 
     Loop, % seedCraftingItems.Length()
