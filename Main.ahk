@@ -529,7 +529,7 @@ searchItem(search := "nil") {
         Sleep, 50
 
         if (search = "recall") {
-            uiUniversal("2211550554155055", 1, 1)
+            uiUniversal("22211550554155055", 1, 1)
         }
 
         uiUniversal(10)
@@ -1468,7 +1468,7 @@ SaveAutoHoney:
 Return
 
 SpamE:
-    Sleep, 50
+    Sleep, 30
     Send, e
 Return
 
