@@ -384,17 +384,12 @@ uiUniversal(order := 0, exitUi := 1, continuous := 0, spam := 0, spamCount := 30
         previousIndex := findIndex(currentArray, indexItem)
         sendCount := index - previousIndex
 
-        FileAppend, % "index: " . index . "`n", debug.txt
-        FileAppend, % "previusIndex: " . previousIndex . "`n", debug.txt
-        FileAppend, % "currentarray: " . currentArray.Name . "`n", debug.txt
-
         if (dir = "up") {
             repeatKey(dir)
             repeatKey("Enter")
             repeatKey(dir, sendCount)
         }
         else if (dir = "down") {
-            FileAppend, % "sendCount: " . sendCount . "`n", debug.txt
             repeatKey(dir, sendCount)
             repeatKey("Enter")
             repeatKey(dir)
@@ -521,12 +516,9 @@ sleepAmount(fastTime, slowTime) {
 }
 
 findIndex(array := "", value := "", returnValue := "int") {
-    
-    FileAppend, % "Searching " . array.Name . " for " . value . "`n", debug.txt
 
     for index, item in array {
         if (value = item) {
-            FileAppend, % "found " . value . " at index " . index "`n", debug.txt
             if (returnValue = "int") {
                 return index
             }
@@ -2479,7 +2471,7 @@ Return
 AutoReconnect:
     global actionQueue
 
-    If (MultiInstanceMode || failCount >= 2){
+    If (MultiInstanceMode || failCount >= 4){
         started := 0
         actionQueue := []
         failCount := 0  
@@ -3962,7 +3954,6 @@ SummerHarvestPath:
     global actionQueue
     global savedHarvestSpeed
 
-    actionQueue := []
     cycleCounter := 0
 
     if(LoadInputs()){
@@ -4026,17 +4017,13 @@ SummerHarvestPath:
         ; Talk To NPC
         Send, e
         Sleep, 1500
-        SafeClickRelative(0.65, 0.55)
+        SafeClickRelative(0.65, 0.52)
         Sleep, 1000
         uiUniversal(11110)
     }
     Sleep, 100
     cycleCounter := 0
-    Sleep, 100
-    actionQueue.Push("BuyEggShop")
-    Sleep, 100
-    actionQueue.Push("BuySummer")
-    Sleep, 100
+    actionQueue.RemoveAt(1, 2)
     SendDiscordMessage(webhookURL, "**[Summer Harvest Finished]**")
 
 Return
